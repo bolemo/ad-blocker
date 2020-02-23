@@ -30,7 +30,7 @@ check_deps () {
 
 # check for whitelist/blacklist configuration files & create templates if not present
 check_conf () {
-  ServerList="${ConfDir}/ad-blocker-serverlist.conf"
+  ServerList="${ConfDir}/ad-blocker-sl.conf"
   WhiteList="${ConfDir}/ad-blocker-wl.conf"
   BlackList="${ConfDir}/ad-blocker-bl.conf"
 
@@ -148,7 +148,7 @@ update_zone_master () {
 }
 
 fetch_blocklists () {
-  ServerList="${ConfDir}/ad-blocker-serverlist.conf"
+  ServerList="${ConfDir}/ad-blocker-sl.conf"
   while IFS= read -r Line; do
     BlocklistURL=$(echo "$Line" | grep -v "^[[:space:]*\#]")
     if [ -z "$BlocklistURL" ]; then
