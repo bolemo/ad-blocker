@@ -45,7 +45,7 @@ The Domain Name _must_ be `null.zone.file` and the Serial Format _must_ be set a
 1. Navigate to the appropriate directory
     * `cd /usr/local/bin`
 1. Download the `ad-blocker.sh` script
-    * `sudo wget -O ad-blocker.sh "https://raw.githubusercontent.com/steventblack/ad-blocker/master/ad-blocker.sh"`
+    * `sudo wget -O ad-blocker.sh "https://raw.githubusercontent.com/bolemo/ad-blocker/master/ad-blocker.sh"`
 1. Change the owner and permissions of the script
     * `sudo chown root:root ad-blocker.sh`
     * `sudo chmod +x ad-blocker.sh`
@@ -76,11 +76,27 @@ The ad-blocking functionality should now be in effect. You can test the effectiv
 
 The run time should be set to run no more than once a day and be performed at an off-peak traffic time. The block lists don't change that frequently so be courteous to the provider. It is not strictly necessary to have the run details sent via email, but enabling it may help if there's a need to troubleshoot.
 
+## Sourcelist
+User-defined sourcelist functionality has been added to allow to define the source(s) of blocklist providers. Template with some default sources for the configuration file of this functionality is automatically created upon the initial run of the `ad-blocker.sh` script.
+
+1. SSH as the administrator to the Synology device
+    * `ssh admin@synology.example.com`
+1. Navigate to the appropriate directory
+    * `cd /usr/local/etc`
+1. Open `ad-blocker-sl.conf` for editing
+    * `sudo vi ad-blocker-sl.conf`
+1. Add additional sources (one per line) and save the file
+    * Example: `blocklist.example.com`
+    * Comments are indicated by a `#` as the first character on a line
+1. Re-run the `ad-blocker.sh` script to pick up the changes (or wait until next scheduled time)
+    * `cd /usr/local/bin`
+    * `sudo ./ad-blocker.sh`
+
 ## Blacklist/Whitelist
 User-defined blacklist/whitelist functionality has been added to allow personalized rules to either enhance blocking or permit access. Templates for the configuration files of this functionality are automatically created upon the initial run of the `ad-blocker.sh` script.
 
 ### Blacklist
-A user-defined blacklist functionality is available to add custom domains into the block list. This may help fill in any "gaps" for domains not captured by the [yoyo.org](http://pgl.yoyo.org/adservers/) block list. There is no harm if a domain appears in both the user-specified black list and the main list as the scripts will detect the duplicate and skip over any redundant mentions.
+A user-defined blacklist functionality is available to add custom domains into the block list. This may help fill in any "gaps" for domains not captured by the blocklists defined in the sourcelist. There is no harm if a domain appears in both the user-specified black list and the main list as the scripts will detect the duplicate and skip over any redundant mentions.
 
 1. SSH as the administrator to the Synology device
     * `ssh admin@synology.example.com`
