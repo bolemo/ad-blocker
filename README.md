@@ -12,7 +12,7 @@ There are several advantages of enabling a LAN-wide ad-blocking service over tra
 
 ### Version 2
 Version 2 is using the Response Policy Zone (RPZ) capability of BIND (behind DNSServer). RPZ is acting like a DNS firewall.
-There are 2 DNS zones created: the blocklist itself that will contain all the domains (or IPs) that will be blocked, and a sinkhole zone on which all blocked domains or IPs will be redirected. This gives flexibility to easily change what happens when a blocked domain is called without having to change all the entries or rebuild the entire blocklist database. For example, the sinkhole can simply redirect to 127.0.0.1 therefore sending all requests to blocked domains to nowhere, or redirect to a local server (a walled garden) to inform web requests that the domain is blocked on this network, or even serve an HTTP 204 no data to avoid error pages in navigators when trying to reach a blocked domain. How to do that will be explained here later.
+There are 2 DNS zones created: the blocklist itself that will contain all the domains (or IPs) that will be blocked, and a sinkhole zone on which all blocked domains or IPs will be redirected. This gives flexibility to easily change what happens when a blocked domain is called without having to change all the entries or rebuild the entire blocklist database. For example, the sinkhole can simply redirect to `127.0.0.1` therefore sending all requests to blocked domains to nowhere, or redirect to a local server (a walled garden) to inform web requests that the domain is blocked on this network, or even serve an `HTTP 204 no data` to avoid error pages in navigators when trying to reach a blocked domain. How to do that will be explained here later.
 
 ## Requirements
 This project requires some familiarity with the basic Unix system and tools. Additionally, access to the Synology admin interface is requried. This project _does_ involve access to the internals to your system. As such, there is always the risk of an accident or mistake leading to irrecoverable data loss. **Be mindful when logged onto your system -- especially when performing any action as root or admin.**
@@ -69,9 +69,9 @@ The Domain Name _must_ be `rpz.blocklist` and the Serial Format _must_ be set as
     * `sudo chmod +x ad-blocker.sh`
 1. Verify the script executes properly
     * `sudo ./ad-blocker.sh`
-    * Verify `/var/packages/DNSServer/target/named/etc/zone/data/ad-blocker.db` exists and has ~200k of data
-    * Verify `/var/packages/DNSServer/target/named/etc/zone/data/null.zone.file` has the line `include "/etc/zone/data/ad-blocker.db";`
-    * Verify `/var/packages/DNSServer/target/named/etc/zone/master/null.zone.file` is updated with the correct serial number
+    * Verify the output of the script
+    * Verify from DSM -> DNS Server that rpz.blocklist Resource Record is populated with a large list
+    * Verify from DSM -> DNS Server Log that there are no errors
     
 The ad-blocking functionality should now be in effect. You can test the effectiveness by disabling any ad-blocking plugins in your browser and navigating to any ad-laden website to verify ads remain suppressed. Mobile devices should similarly be tested.
 
