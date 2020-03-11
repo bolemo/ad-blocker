@@ -10,6 +10,10 @@ There are several advantages of enabling a LAN-wide ad-blocking service over tra
 * It works for mobile devices (phones, tablets, etc.) for both browser and apps
 * It is effective even on devices not allowed to be modified, e.g. school-owned tablets
 
+### Version 2
+Version 2 is using the Response Policy Zone (RPZ) capability of BIND (behind DNSServer). RPZ is acting like a DNS firewall.
+There are 2 DNS zones created: the blocklist itself that will contain all the domains (or IPs) that will be blocked, and a sinkhole zone on which all blocked domains or IPs will be redirected. This gives flexibility to easily change what happens when a blocked domain is called without having to change all the entries or rebuild the entire blocklist database. For example, the sinkhole can simply redirect to 127.0.0.1 therefore sending all requests to blocked domains to nowhere, or redirect to a local server (a walled garden) to inform web requests that the domain is blocked on this network, or even serve an HTTP 204 no data to avoid error pages in navigators when trying to reach a blocked domain. How to do that will be explained here later.
+
 ## Requirements
 This project requires some familiarity with the basic Unix system and tools. Additionally, access to the Synology admin interface is requried. This project _does_ involve access to the internals to your system. As such, there is always the risk of an accident or mistake leading to irrecoverable data loss. **Be mindful when logged onto your system -- especially when performing any action as root or admin.**
 
@@ -31,26 +35,27 @@ This service requires the following skills:
 1. Fill in the following fields as follows:
     * Domain Type: Forward Zone
     * Domain Name: `sinkhole`
-    * Master DNS Server: `0.0.0.0`
+    * Master DNS Server: `<IP Address of your Synology Device>`
     * Serial Format: Date (YYYYMMDDNN)
 1. Enable "Limit zone update" but do __not__ set any values for it.
 1. (Optional) Set a limit on the Zone Transfer rules to restrict it to your LAN.
 1. (Optional) Set a limit on the source IP rules to restrict it to your LAN.
+1. Validate then select and modify the Ressource Record of the Sinkhole Zone to modify the ns.sinkhole record IP address to `127.0.0.1`.
 
-The Domain Name _must_ be `sinkhole` as that is what the updater script requires. The sinkhole must reference a static zone configuration file and so the "Limit zone update" must be enabled with no values so that the resulting configuration file is generated with the line `allow-update {none;};`.
+The Domain Name _must_ be `sinkhole` as that is what the updater script requires. The sinkhole must reference a static zone configuration file and so the "Limit zone update" must be enabled with no values so that the resulting configuration file is generated with the line `allow-update {none;};`. Master DNS Server needs to be set at first with the Synology device IP then changed to `127.0.0.1` after it has been generated to avoid errors.
 
 ### Blocklist Setup
 1. Select the "Zones" tab and create another new Master Zone.
 1. Fill in the following fields as follows:
     * Domain Type: Forward Zone
     * Domain Name: `rpz.blocklist`
-    * Master DNS Server: `0.0.0.0`
+    * Master DNS Server: `<IP Address of your Synology Device>`
     * Serial Format: Date (YYYYMMDDNN)
 1. Enable "Limit zone update" but do __not__ set any values for it.
 1. Enable "Limit zone transfer" but do __not__ set any values for it.
 1. Enable "Limit IP source service" but do __not__ set any values for it.
 
-The Domain Name _must_ be `rpz.blocklist` and the Serial Format _must_ be set as `Date` as that is what the updater script requires. The blocked zones must reference a static zone configuration file and so the "Limit zone update" must be enabled with no values so that the resulting configuration file is generated with the line `allow-update {none;};`.
+The Domain Name _must_ be `rpz.blocklist` and the Serial Format _must_ be set as `Date` as that is what the updater script requires. The blocked zones must reference a static zone configuration file and so the "Limit zone update" must be enabled with no values so that the resulting configuration file is generated with the line `allow-update {none;};`. Master DNS Server is set with the Synology device to avoid errors, it will be overwritten anyway...
 
 ## Script Installation
 1. SSH as the administrator to the Synology device
